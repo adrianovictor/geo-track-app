@@ -169,6 +169,7 @@ export default function App() {
             <table className="w-full">
               <thead className="bg-gray-100 border-b border-gray-200">
                 <tr>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Id</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Placa</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Modelo</th>
                   <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Marca</th>
@@ -193,6 +194,7 @@ export default function App() {
                 ) : (
                   vehicles.map((vehicle, idx) => (
                     <tr key={vehicle.id || idx} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm text-gray-900">{vehicle.id}</td>
                       <td className="px-6 py-4 text-sm text-gray-900">{vehicle.plate}</td>
                       <td className="px-6 py-4 text-sm text-gray-900">{vehicle.model}</td>
                       <td className="px-6 py-4 text-sm text-gray-900">{vehicle.brand}</td>

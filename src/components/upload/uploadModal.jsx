@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { vehicleService } from '../../services/vehicleService';
 
 export default function UploadModal({ isOpen, onClose, onUpload }) {
   const [file, setFile] = useState(null);
@@ -11,6 +12,9 @@ export default function UploadModal({ isOpen, onClose, onUpload }) {
     if (file) {
       onUpload(file);
       setFile(null);
+
+      vehicleService.uploadRoutePositions(file);
+      onClose();
     }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
+import { vehicleService } from '../../services/vehicleService';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -12,18 +13,36 @@ L.Icon.Default.mergeOptions({
 
 
 export default function MapView({ vehicle, onClose }) {
+  const [vehicleData, setVehicleData] = useState(null); // evitar conflito
   const [routes, setRoutes] = useState([]);
-  
+
   useEffect(() => {
-    setRoutes([
-      { lat: -23.550520, lng: -46.633308 },
-      { lat: -23.551520, lng: -46.634308 },
-      { lat: -23.552520, lng: -46.635308 },
-      { lat: -23.553520, lng: -46.636308 },
-    ]);
+    if (!vehicle) return;
+
+    const fetchVehicle = async () => {
+      try {
+        const data = await vehicleService.getVehicleById(vehicle.id); // usa id da prop
+        setVehicleData(data);
+
+        if (data.locations && data.locations.length > 0) {
+          const mapped = data.locations.map(loc => ({
+            lat: loc.latitude,
+            lng: loc.longitude,
+            date: loc.date,
+          }));
+          setRoutes(mapped);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar veículo:", err);
+      }
+    };
+
+    fetchVehicle();
   }, [vehicle]);
 
-  if (!vehicle) return null;
+  if (!vehicleData) return null;
+
+  console.log(routes);
 
   return (
     <div className="fixed inset-0 bg-white z-50">
