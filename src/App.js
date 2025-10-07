@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 
 import { vehicleService } from './services/vehicleService';
-import VehicleModal from './components/vehicle/vehicleModel';
+import VehicleModal from './components/vehicle/vehicleModal';
 import UploadModal from './components/upload/uploadModal';
 import MapView from './components/map/mapView';
 
@@ -38,13 +38,12 @@ export default function App() {
         Offset: (currentPage - 1) * filters.Limit
       };
       
-      const data = await vehicleService.getVehicles(params);
+      const data = await vehicleService.list(params);
       
-      // A API retorna { vehicles: [...], totalRecords, currentPage, pageItens }
       setVehicles(data.vehicles || []);
       setTotalRecords(data.totalRecords || 0);
       
-      console.log('Veículos carregados:', data);
+      //console.log('Veículos carregados:', data);
     } catch (error) {
       console.error('Erro ao carregar veículos:', error);
       setVehicles([]);
@@ -72,9 +71,9 @@ export default function App() {
   const handleSave = async (data) => {
     try {
       if (selectedVehicle) {
-        await vehicleService.updateVehicle(selectedVehicle.id, data);
+        await vehicleService.update(selectedVehicle.id, data);
       } else {
-        await vehicleService.createVehicle(data);
+        await vehicleService.create(data);
       }
       setIsModalOpen(false);
       loadVehicles();
@@ -87,7 +86,7 @@ export default function App() {
   const handleDelete = async (id) => {
     if (window.confirm('Deseja realmente excluir este veículo?')) {
       try {
-        await vehicleService.deleteVehicle(id);
+        await vehicleService.delete(id);
         loadVehicles();
       } catch (error) {
         console.error('Erro ao excluir veículo:', error);
@@ -143,22 +142,13 @@ export default function App() {
             />
           </div>
           <div className="flex gap-3">
-            <button
-              onClick={handleSearch}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={handleSearch} className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
               Buscar
             </button>
-            <button
-              onClick={handleCreate}
-              className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
+            <button onClick={handleCreate} className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
               + Adicionar Veículo
             </button>
-            <button
-              onClick={() => setIsUploadModalOpen(true)}
-              className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-            >
+            <button onClick={() => setIsUploadModalOpen(true)} className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
               📤 Upload de Rotas
             </button>
           </div>
@@ -202,22 +192,13 @@ export default function App() {
                       <td className="px-6 py-4 text-sm text-gray-900">{vehicle.renavam}</td>
                       <td className="px-6 py-4 text-sm text-center">
                         <div className="flex justify-center gap-2">
-                          <button
-                            onClick={() => setViewingVehicle(vehicle)}
-                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
-                          >
+                          <button onClick={() => setViewingVehicle(vehicle)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs">
                             Ver Rota
                           </button>
-                          <button
-                            onClick={() => handleEdit(vehicle)}
-                            className="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-xs"
-                          >
+                          <button onClick={() => handleEdit(vehicle)} className="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-xs">
                             Editar
                           </button>
-                          <button
-                            onClick={() => handleDelete(vehicle.id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-xs"
-                          >
+                          <button onClick={() => handleDelete(vehicle.id)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-xs">
                             Excluir
                           </button>
                         </div>
@@ -251,24 +232,11 @@ export default function App() {
         </div>
       </div>
 
-      <VehicleModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        vehicle={selectedVehicle}
-        onSave={handleSave}
-      />
-
-      <UploadModal
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-        onUpload={handleUpload}
-      />
+      <VehicleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} vehicle={selectedVehicle} onSave={handleSave} />
+      <UploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} onUpload={handleUpload} />
 
       {viewingVehicle && (
-        <MapView
-          vehicle={viewingVehicle}
-          onClose={() => setViewingVehicle(null)}
-        />
+        <MapView vehicle={viewingVehicle} onClose={() => setViewingVehicle(null)} />
       )}
     </div>
   );

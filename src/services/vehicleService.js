@@ -1,41 +1,34 @@
-const API_BASE_URL = 'http://localhost:5108/api';
+import axios from "axios";
 
-export const vehicleService = {
-  getVehicles: async (params = {}) => {
+const api = axios.create({
+  baseURL: 'http://localhost:5108/api'
+});
+
+export const vehicleService = ({
+  list: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${API_BASE_URL}/Vechicles?${queryString}`);
-    return response.json();
+    const response = await api.get(`/Vehicles?${queryString}`);
+    return response.data;
   },
 
-  getVehicleById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/Vechicles/${id}`);
-    return response.json();
+  getById: async (id) => {
+    const response = await api.get(`/Vehicles/${id}`);
+    return response.data;
   },
-  
-  createVehicle: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/Vechicles`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return response.json();
+
+  create: async (data) => {
+    const response = await api.post('/Vehicles', data);
+    return response.data;
   },
-  
-  updateVehicle: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/Vechicles/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return response.json();
+
+  update: async (id, data) => {
+    const response = await api.put(`/Vehicles/${id}`, data);
+    return response.data;
   },
-  
-  deleteVehicle: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/Vechicles/${id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    return response.ok;
+
+  delete: async (id) => {
+    const response = await api.delete(`/Vehicles/${id}`);
+    return response.data;
   },
 
   uploadRoutePositions: async (file, onProgress) => {
@@ -56,16 +49,26 @@ export const vehicleService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(`${API_BASE_URL}/Vechicles/upload-vehicles-route-positions`, {
-      method: 'POST',
-      body: formData,
-    });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Erro no upload: ${response.statusText}`);
+    try {
+      const response = await api.post('/Vehicles/upload-vehicles-route-positions', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress && progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(percent);
+          }
+        }
+      });
+
+      return response.data;
+
+    } catch (err) {
+      const msg = err.response?.data?.error || 'Erro no upload';
+      throw new Error(msg);
     }
+  },    
 
-    return response.json();
-  },  
-};
+});

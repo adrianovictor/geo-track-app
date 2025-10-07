@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function VehicleModal({ isOpen, onClose, vehicle, onSave }) {
   const [formData, setFormData] = useState({
@@ -94,16 +94,10 @@ export default function VehicleModal({ isOpen, onClose, vehicle, onSave }) {
           </div>
           
           <div className="flex justify-end gap-3 mt-6">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-            >
+            <button onClick={onClose} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
               Cancelar
             </button>
-            <button
-              onClick={handleSubmit}
-              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-            >
+            <button onClick={handleSubmit} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
               {vehicle ? 'Salvar' : 'Criar'}
             </button>
           </div>
