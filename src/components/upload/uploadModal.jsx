@@ -31,7 +31,7 @@ export default function UploadModal({ isOpen, onClose, onUpload }) {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Arquivo de Rotas (CSV/JSON)
+                Arquivo de Rotas (JSON)
               </label>
               <input
                 type="file"
